@@ -1,4 +1,4 @@
-package net.elodina.examples.oneusagov.stream
+package net.elodina.tools.kafka.listener
 
 import java.io.{File, FileInputStream, InputStream}
 import java.util.Properties
@@ -44,7 +44,7 @@ object Config {
     props
   }
 
-  val cliParser = new OptionParser[Map[String, String]] ("stream-consumer") {
+  val cliParser = new OptionParser[Map[String, String]] ("kafka-listner") {
 
     opt[String] ("kafka.bootstrap.servers").optional().text("Kafka bootstrap servers").action {
       (value, config) =>
@@ -56,9 +56,29 @@ object Config {
         config.updated ("kafka.topic", value)
     }
 
-    opt[String] ("oneusagov.stream.address").optional().text("Click stream address").action {
+    opt[String] ("group.id").optional().text("Kafka group id").action {
       (value, config) =>
-        config.updated ("oneusagov.stream.address", value)
+        config.updated ("group.id", value)
+    }
+
+    opt[String] ("enable.auto.commit").optional().text("Kafka auto commit for group's offset").action {
+      (value, config) =>
+        config.updated ("enable.auto.commit", value)
+    }
+
+    opt[String] ("listener.buffer.max.size").optional().text("Maximium number of items for internal buffer of topics read from kafka").action {
+      (value, config) =>
+        config.updated ("listener.buffer.max.size", value)
+    }
+
+    opt[String] ("listener.read.wait.ms").optional().text("Wait time between dequeuing an item from the topic item internal buffer (for display)").action {
+      (value, config) =>
+        config.updated ("listener.read.wait.ms", value)
+    }
+
+    opt[String] ("auto.offset.reset").optional().text("Tells the kafka consumer to read from the beginning of the topic partition").action {
+      (value, config) =>
+        config.updated ("auto.offset.reset", value)
     }
 
 
@@ -69,10 +89,12 @@ object Config {
 class Config(props: Properties) {
 
   val KafkaBootstrapServers = props.getProperty("kafka.bootstrap.servers")
-
   val KafkaTopic = props.getProperty("kafka.topic")
-
-  val OneUsaGovStreamAddress = props.getProperty("oneusagov.stream.address")
-
+  val GroupId = props.getProperty("group.id")
+  val EnableAutoCommit = props.getProperty("enable.auto.commit")
+  val ListenerBufferMaxSize = props.getProperty("listener.buffer.max.size")
+  val ListenerReadWaitMs = props.getProperty("listener.read.wait.ms")
+  val AutoOffsetReset = props.getProperty("auto.offset.reset")
 
 }
+

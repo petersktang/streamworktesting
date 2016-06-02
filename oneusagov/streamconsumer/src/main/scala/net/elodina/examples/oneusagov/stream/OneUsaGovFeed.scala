@@ -1,18 +1,13 @@
 package net.elodina.examples.oneusagov.stream
 
 
-import com.typesafe.config.ConfigFactory
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, Uri}
 import akka.stream.ActorMaterializer
-import org.codehaus.jackson.map.ObjectMapper
 import org.slf4j.LoggerFactory
 import java.util.concurrent.BlockingQueue
-import akka.event.Logging.DefaultLogger
-import scala.concurrent.Await
-import scala.concurrent.duration._
-import scala.concurrent._
+
 
 
 /**
@@ -24,7 +19,7 @@ class OneUsaGovFeed(messageQueue: BlockingQueue[FeedEvent], host: String = "http
   // set this to true to stop the thread
 
   val log = LoggerFactory.getLogger(this.getClass)
-  val jsonMapper = new ObjectMapper()
+
 
   var shutdownFlag = false
 
@@ -55,7 +50,6 @@ class OneUsaGovFeed(messageQueue: BlockingQueue[FeedEvent], host: String = "http
 
       }
     }
-
 
     while(!shutdownFlag) {
 

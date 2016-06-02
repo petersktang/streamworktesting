@@ -1,1 +1,1 @@
-include 'common','oneusagov/streamconsumer','oneusagov/topology'
+include 'common','oneusagov/streamconsumer','oneusagov/topology','tools/kafkalistener'

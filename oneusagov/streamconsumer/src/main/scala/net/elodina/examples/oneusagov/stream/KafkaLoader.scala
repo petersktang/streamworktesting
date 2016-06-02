@@ -1,8 +1,10 @@
 package net.elodina.examples.oneusagov.stream
 
 
-import net.elodina.common.stream.KafkaProducerHelper;
+import net.elodina.common.stream.KafkaProducerHelper
 import java.util.concurrent.{BlockingQueue, TimeUnit}
+
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 
 
@@ -43,15 +45,20 @@ class KafkaLoader( messageQueue: BlockingQueue[FeedEvent], config: Config) exten
 
         log.debug("Got an event {}", item)
 
-
         try {
-
           
           eventCounter += 1
-          if (eventCounter % 100 == 0) log.info("Consumed {} wikipedia edits events by now", eventCounter)
+          if (eventCounter % 100 == 0) log.info("Consumed {} click events by now", eventCounter)
 
-          //pass to kafka          
-          producer.produce("key", "record", config.KafkaTopic)
+          //jackson object to convert item object to json
+          val mapper: ObjectMapper = new ObjectMapper
+
+          //serialize to json
+          val itemJson: String = mapper.writeValueAsString(item)
+
+
+          //send itemJson to kafka
+          producer.produce("key", itemJson, config.KafkaTopic)
           
           produceCounter += 1
           log.debug("Successfully produced {} to Kafka, \n record=" + item.toString())

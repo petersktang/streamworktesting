@@ -1,31 +1,35 @@
 package net.elodina.common.stream
 
-
-import java.util.concurrent.TimeUnit
-import org.apache.kafka.clients.producer.KafkaProducer
-import org.apache.kafka.clients.producer.ProducerConfig
-import org.apache.kafka.clients.producer.ProducerRecord
 import java.util.Properties
+
+import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerRecord}
+
 
 /**
   * A simple Kafka producer.
   */
 class KafkaProducerHelper(bootstrapServers: String) {
 
-  // val props = new Properties()
-  
-  // props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
-  
-  // var producer: KafkaProducer[Object, Object] = null
-  
-    
-  // props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-  //   classOf[io.confluent.kafka.serializers.KafkaAvroSerializer])
-  // producer = new KafkaProducer[Object, Object](props)
-  
+   val props = new Properties();
+   props.put("bootstrap.servers", bootstrapServers)
+   props.put("acks", "all")
+   props.put("retries", new Integer(0))
+   props.put("batch.size", new Integer(16384))
+   props.put("linger.ms", new Integer(1))
+   props.put("buffer.memory", new Integer(33554432))
+   props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
+   props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
 
+   val producer = new KafkaProducer[String, String](props)
 
-   def produce(key: String, value: String, topic: String): Unit = {    
-     //producer.send(record).get(3, TimeUnit.SECONDS)
+   def close(): Unit = {
+      producer.close();
+   }
+
+   def produce(key: String, value: String, topic: String): Unit = {
+
+      val record = new ProducerRecord[String, String](topic, key, value)
+      producer.send(record);
+
    }
 }

@@ -58,17 +58,14 @@ project("common") {
 
     dependencies {
         compile 'org.scala-lang:scala-library:2.11.5'
-        //compile 'io.confluent:kafka-avro-serializer:1.0.1'
+        compile 'org.apache.kafka:kafka-clients:0.9.0.0'
+        compile 'com.github.scopt:scopt_2.11:3.3.0'
+
         
-        compile 'org.apache.kafka:kafka_2.11:0.9.0.0'
-        
-        //for zipkin
-        //compile "com.github.kristofa:brave-core:3.0.0"
-        
-        compile "org.apache.thrift:libthrift:0.9.3"
+        //compile "org.apache.thrift:libthrift:0.9.3"
         
         //cmd line option parser
-        compile 'com.github.scopt:scopt_2.11:3.3.0'
+
     }
 
     jar {
@@ -84,9 +81,6 @@ project("common") {
 }
 
 project("oneusagov/streamconsumer") {
-    
-    //starts a jvm with class paths and can tar/zip (requires 'main' or 'mainClassName' set to a main method)
-    //apply plugin: 'application'
 
     
     version = '1.0'
@@ -101,7 +95,7 @@ project("oneusagov/streamconsumer") {
         compile 'com.typesafe:ssl-config-akka_2.11:0.1.2'
         compile 'com.typesafe.akka:akka-http-core-experimental_2.11:2.0.4'
         compile 'com.typesafe.akka:akka-stream-experimental_2.11:2.0.4'
-        compile 'org.codehaus.jackson:jackson-jaxrs:1.8.5'
+        compile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
 
     }
    
@@ -120,10 +114,51 @@ project("oneusagov/streamconsumer") {
     task run(type:JavaExec) {
         main = 'net.elodina.examples.oneusagov.stream.StreamConsumerMain'
         classpath = sourceSets.main.runtimeClasspath
-        //systemProperty "log4j.configuration", "file:../config/one-usa-gov.stream-consumer-log4j.properties"
-        args "../config/one-usa-gov.stream-consumer.properties"
+        systemProperty "log4j.configuration", "file:../../config/one-usa-gov.stream-consumer.log4j.properties"
+        args "../../config/one-usa-gov.stream-consumer.properties"
     }
     
+
+}
+
+
+
+project("tools/kafkalistener") {
+
+
+    version = '1.0'
+    jar.archiveName = "kafka-listener-${version}.jar"
+
+    dependencies {
+        compile (project(':common')) {
+            exclude group: 'org.slf4j'
+        }
+
+        compile 'org.scala-lang:scala-library:2.11.5'
+        compile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
+        compile 'org.apache.kafka:kafka-clients:0.9.0.0'
+
+    }
+
+
+    jar {
+        doFirst {
+            from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) {
+                exclude "META-INF/*.SF"
+                exclude "META-INF/*.DSA"
+                exclude "META-INF/*.RSA"
+            }
+        }
+        manifest.attributes("Main-Class": "net.elodina.tools.kafka.listener.KafkaListenerMain")
+    }
+
+    task run(type:JavaExec) {
+        main = 'net.elodina.tools.kafka.listener.KafkaListenerMain'
+        classpath = sourceSets.main.runtimeClasspath
+        systemProperty "log4j.configuration", "file:../../config/kafka-listener.log4j.properties"
+        args "../../config/kafka-listener.properties"
+    }
+
 
 }
 
