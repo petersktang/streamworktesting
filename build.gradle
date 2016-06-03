@@ -3,22 +3,26 @@ task wrapper(type: Wrapper) {
 }
 
 
-allprojects {
-
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+    }
 }
 
-    
+//apply plugin: 'java' // or 'groovy'. Must be explicitly applied
+//apply plugin: 'com.github.johnrengelman.shadow'
+
 
 //the following section is executed only on subprojects, ie. everything except the root project folder
 subprojects {
 
-    
+
     //compiles java and scala source go to .class files under /build/classes
     apply plugin: 'scala'
-
     apply plugin: 'java'
 
-    
+
     //send all jars to the root of the project under build/
     tasks.withType(Jar) {
         destinationDir = file("$rootDir/build/")
@@ -84,7 +88,7 @@ project("oneusagov/streamconsumer") {
 
     
     version = '1.0'
-    jar.archiveName = "one-usa-gov-stream-consumer-${version}.jar"
+    jar.archiveName = "one-usa-gov_DO_NOT_USE.jar"
 
     dependencies {
         compile (project(':common')) {
@@ -98,7 +102,6 @@ project("oneusagov/streamconsumer") {
         compile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
 
     }
-   
 
     jar {
         doFirst {
@@ -117,7 +120,15 @@ project("oneusagov/streamconsumer") {
         systemProperty "log4j.configuration", "file:../../config/one-usa-gov.stream-consumer.log4j.properties"
         args "../../config/one-usa-gov.stream-consumer.properties"
     }
-    
+
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    shadowJar {
+        baseName = "one-usa-gov-stream-consumer"
+        version="1.0"
+        mergeServiceFiles('reference.conf')
+    }
+
 
 }
 

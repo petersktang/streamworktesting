@@ -19,6 +19,7 @@ object KafkaListenerMain {
 
     println("Kafka Listener Main is running...")
 
+
     if (args.length < 1) {
       System.err.println("This class should be provided with one argument which is a config file")
       System.exit(-1)
@@ -26,7 +27,8 @@ object KafkaListenerMain {
 
 
     //Config
-    log.info("Loading configuration file {}", args(0))
+    println("Loading configuration file {}", args(0))
+
     val config = Config(new File(args(0)), args.tail)
 
 
@@ -58,9 +60,8 @@ object KafkaListenerMain {
 
     var quitWatching = false
 
-    log.trace("Press q and press enter to quit watching. Ok? Press enter to continue")
 
-    log.trace("topic,partition,offset,key,value")
+    println("topic,partition,offset,key,value")
 
     //poll queue for short period
     while (!quitWatching) {
@@ -70,7 +71,7 @@ object KafkaListenerMain {
 
       if (item != null) {
 
-        log.trace(s"${item.topic},${item.partition},${item.offset}%d,${item.key}%s,${item.value}%s")
+        println(s"${item.topic},${item.partition},${item.offset}%d,${item.key}%s,${item.value}%s")
       }
 
       Thread.sleep(readWaitMs)
