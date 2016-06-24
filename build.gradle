@@ -62,7 +62,7 @@ project("common") {
 
     dependencies {
         compile 'org.scala-lang:scala-library:2.11.5'
-        compile 'org.apache.kafka:kafka-clients:0.9.0.0'
+        compile 'org.apache.kafka:kafka-clients:0.10.0.0'
         compile 'com.github.scopt:scopt_2.11:3.3.0'
 
         
@@ -82,6 +82,11 @@ project("common") {
         }
     }
 
+}
+project("oneusagov/topology") {
+    dependencies {
+        compile 'org.scala-lang:scala-library:2.11.5'
+    }
 }
 
 project("oneusagov/streamconsumer") {
